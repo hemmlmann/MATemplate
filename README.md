@@ -3,12 +3,15 @@ MATemplate by hemmlmann
 
 a basic matrix template for c++ that actually works. surprisingly.
 
+<b><i>c++11 compatible compiler required!</i></b>
+
 =======================
 
 <b>features:</b>
  + create matrices of different datatypes
  + do basic arithmetic on them
- + transpose them
+ + transpose 'em
+ + randomly initialize 'em
  + output them to the console
 
 <b>what's currently not working</b> (but one day will):
