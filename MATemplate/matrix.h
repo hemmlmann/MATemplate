@@ -2,6 +2,7 @@
 #define MATRIX_H
 
 #include <vector>
+#include <random>
 
 //------------------------- M a t r i x -------------------------
 template <typename T>
@@ -78,9 +79,10 @@ public:
 		}
 	}
 
-	void rand() {	//fills (as of yet) the matrix with ascending values per row - will be randomized at some point!
+	void rand(int min, int max) {	//initializes the matrix with random values
+		std::mt19937 rand;
 		for (unsigned int i = 0; i < rows(); i++) {
-			for (unsigned int j = 0; j < cols(); j++) { content[i][j] = i; }
+			for (unsigned int j = 0; j < cols(); j++) { content[i][j] = min + ((rand() / static_cast<T>(rand.max()) * (max-min))); }
 		}
 	}
 
