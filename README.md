@@ -13,7 +13,7 @@ a basic matrix template for c++ that actually works. surprisingly.
 
 <b>what's currently not working</b> (but one day will):
  - inverting a matrix
- - truly randomly initializing a matrix <i>(dummy-function implemented)</i>
+ - determining the determinant of a matrix
  - importing matrices from .txt/.csv/etc...
  - actual exception handling <i>(again: dummies already in place)</i>
  - other cool stuff that i'll have to think of first
