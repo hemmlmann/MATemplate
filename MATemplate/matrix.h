@@ -2,6 +2,7 @@
 #define MATRIX_H
 
 #include <vector>
+#include <valarray>
 #include <random>
 
 //------------------------- M a t r i x -------------------------
@@ -9,54 +10,48 @@ template <typename T>
 class Matrix {
 public:
 	//Some constructor(s)...
-	Matrix(int N, int M)
-	{
-		for (int i = 0; i < N; i++){ content.push_back(std::vector<T>(M)); }
-		m_rows = N;
-		m_cols = M;
+	Matrix(int M, int N) {
+		for (int i = 0; i < M; i++) { content.push_back(std::valarray<T>(N)); }
+		m_rows = M;
+		m_cols = N;
 	}
 
 	//Some operators...
 	Matrix operator+(const Matrix& rhs) {
 		if (this->rows() == rhs.rows() && this->cols() == rhs.cols()) {
 			Matrix<T> retMat(rows(), cols());
-			for (unsigned int i = 0; i < rows(); i++) {
-				for (unsigned int j = 0; j < cols(); j++) {
-					retMat.set(i, j, (this->at(i, j) + rhs.at(i, j)));
-				}
+			for (int i = 0; i < rows(); i++) {
+				retMat.content[i] = this->content[i] + rhs.content[i];
 			}
 			return retMat;
 		}
 		else { throw Matrix_Dimension_Mismatch(); std::cout << "Could not add... Matrix dimension mismatch!\nError Code: :(" << std::endl; }
 	}
+
 	Matrix operator-(const Matrix& rhs) {
 		if (this->rows() == rhs.rows() && this->cols() == rhs.cols()) {
 			Matrix<T> retMat(rows(), cols());
-			for (unsigned int i = 0; i < rows(); i++) {
-				for (unsigned int j = 0; j < cols(); j++) {
-					retMat.set(i, j, (this->at(i, j) - rhs.at(i, j)));
-				}
+			for (int i = 0; i < rows(); i++) {
+				retMat.content[i] = this->content[i] - rhs.content[i];
 			}
 			return retMat;
 		}
 		else { throw Matrix_Dimension_Mismatch(); std::cout << "Could not subtract... Matrix dimension mismatch!\nError Code: :(" << std::endl; }
 	}
+
 	Matrix operator*(const Matrix& rhs) {
 		if (this->cols() == rhs.rows()) {
 			Matrix<T> retMat(this->rows(), rhs.cols());
 			for (unsigned int i = 0; i < retMat.rows(); i++) {
 				for (unsigned int j = 0; j < retMat.cols(); j++) {
-					T sum{};	//(!) C++11 - always initializes variable to default value. which is nice...
-					for (int k = 0; k < retMat.rows(); k++) {
-						sum += this->at(i, k) * rhs.at(k, j);
-					}
-					retMat.set(i, j, sum);
-				}
+					retMat.content[i][j] = (this->content[i] * rhs.getCol(j)).sum();
+				}			
 			}
 			return retMat;
 		}
 		else { throw Matrix_Dimension_Mismatch(); std::cout << "Could not multiply... Matrix dimension mismatch!\nError Code: D:" << std::endl; }
 	}
+
 	Matrix operator==(const Matrix& rhs) {	//returns a boolean matrix containing ones at indices with equal value
 		if (this->rows() == rhs.rows() && this->cols() == rhs.cols()) {
 			Matrix<T> retMat(rows(), cols());
@@ -73,10 +68,10 @@ public:
 
 
 	//Some functions...
-	void zero() {	//"zeros out" the matrix
-		for (unsigned int i = 0; i < rows(); i++) {
-			for (unsigned int j = 0; j < cols(); j++) { content[i][j] = 0; }
-		}
+	Matrix zero() {	//"zeros out" the matrix
+		Matrix<T> retMat(this->rows(), this->cols());
+		for (auto matIt : retMat.content) { matIt = std::valarray<T>(T{}, rows()); }
+		return retMat;
 	}
 
 	void rand(int min, int max) {	//initializes the matrix with random values
@@ -120,6 +115,38 @@ public:
 		std::cout << std::endl;
 	}
 
+	Matrix addRow(std::valarray<T> newRow) {
+		if (newRow.size() == this->cols()) {
+			Matrix<T> retMat = this;
+			retMat.content.push_back(newRow);
+			retMat.m_rows += 1;
+		}
+	}
+
+	Matrix addCol(std::valarray<T> newCol) {
+		//to be done some fine day...
+	}
+
+	std::valarray<T> getRow(int i) const {
+		if (i < rows()) { return content[i]; }
+		else {
+			//do some exception(al) handling
+		}
+	}
+
+	std::valarray<T> getCol(int j) const {
+		if (j < cols()) {
+			std::valarray<T> retArr(cols());
+			for (unsigned int k = 0; k < cols(); k++) {
+				retArr[k] = content[j][k];
+			}
+			return retArr;
+		}
+		else {
+			//also handle this exceptionally
+		}
+	}
+
 	T at(unsigned int n, unsigned int m) const
 	{
 		if (n < rows() && m < cols()) { return content[n][m]; }
@@ -137,7 +164,7 @@ public:
 private:
 	unsigned int m_rows;
 	unsigned int m_cols;
-	std::vector<std::vector<T>> content;
+	std::vector<std::valarray<T>> content;
 };
 
 
